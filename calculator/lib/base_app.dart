@@ -1,19 +1,53 @@
 import 'package:calculator/style.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
-class BaseApp extends StatelessWidget {
-  const BaseApp({Key? key}) : super(key: key);
+class BaseApp extends StatefulWidget {
+  @override
+  State<BaseApp> createState() => _BaseAppState();
+}
+
+class _BaseAppState extends State<BaseApp> {
+  String equation = "0";
+  String result = "0";
+  String expression = "";
+
+  buttonPress(String text) {
+    setState(() {
+      if (text == "C") {
+        equation = "0";
+        result = "0";
+      } else if (text == "=") {
+        expression = equation;
+        try {
+          Parser p = Parser();
+          Expression exp = p.parse(expression);
+
+          ContextModel cm = ContextModel();
+          result = '${exp.evaluate(EvaluationType.REAL, cm)}';
+        } catch (e) {
+          result = "Error $e";
+        }
+      } else {
+        equation == '0' ? equation = text : equation = equation + text;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    var platformBrightness = MediaQuery.of(context).platformBrightness;
     Widget button(String text) {
       return Container(
-        margin: EdgeInsets.only(bottom: 25),
+        margin: EdgeInsets.only(bottom: 20),
         height: MediaQuery.of(context).size.height * 0.09,
         child: FloatingActionButton(
+          heroTag: null,
           backgroundColor: bgColor1,
           splashColor: Colors.grey,
-          onPressed: () {},
+          onPressed: () {
+            buttonPress(text);
+          },
           child: Text(
             text,
             style: clearTextStyle.copyWith(fontSize: 36),
@@ -31,7 +65,7 @@ class BaseApp extends StatelessWidget {
             Container(
               padding: EdgeInsets.only(top: 40),
               child: Text(
-                '2 + 7',
+                equation,
                 style: primaryTextStyle.copyWith(fontSize: 48),
               ),
             ),
@@ -40,7 +74,7 @@ class BaseApp extends StatelessWidget {
             ),
             Container(
               child: Text(
-                '9',
+                result,
                 style: secondaryTextStyle.copyWith(fontSize: 48),
               ),
             ),
@@ -57,7 +91,14 @@ class BaseApp extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.backspace_outlined),
                     color: secondaryTextColor,
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        equation = equation.substring(0, equation.length - 1);
+                        if (equation == "") {
+                          equation = "0";
+                        }
+                      });
+                    },
                   ),
                 ],
               ),
@@ -86,42 +127,42 @@ class BaseApp extends StatelessWidget {
                       children: [
                         TableRow(
                           children: [
-                            button('C'),
-                            button('()'),
-                            button('%'),
-                            button('÷'),
+                            button("C"),
+                            button("%"),
+                            button("÷"),
+                            button("÷"),
                           ],
                         ),
                         TableRow(
                           children: [
-                            button('7'),
-                            button('8'),
-                            button('9'),
-                            button('x'),
+                            button("7"),
+                            button("8"),
+                            button("9"),
+                            button("x"),
                           ],
                         ),
                         TableRow(
                           children: [
-                            button('4'),
-                            button('5'),
-                            button('6'),
-                            button('-'),
+                            button("4"),
+                            button("5"),
+                            button("6"),
+                            button("-"),
                           ],
                         ),
                         TableRow(
                           children: [
-                            button('1'),
-                            button('2'),
-                            button('3'),
-                            button('+'),
+                            button("1"),
+                            button("2"),
+                            button("3"),
+                            button("+"),
                           ],
                         ),
                         TableRow(
                           children: [
-                            button('+/-'),
-                            button('0'),
-                            button('.'),
-                            button('='),
+                            button("+/-"),
+                            button("0"),
+                            button("."),
+                            button("="),
                           ],
                         ),
                       ],
@@ -136,7 +177,8 @@ class BaseApp extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: bgColor1,
+      backgroundColor:
+          platformBrightness == Brightness.light ? bgColor1 : bgColor2,
       body: app(),
     );
   }
