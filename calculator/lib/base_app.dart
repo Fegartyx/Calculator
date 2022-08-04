@@ -19,6 +19,8 @@ class _BaseAppState extends State<BaseApp> {
         result = "0";
       } else if (text == "=") {
         expression = equation;
+        expression = expression.replaceAll('x', '*');
+        expression = expression.replaceAll('÷', '/');
         try {
           Parser p = Parser();
           Expression exp = p.parse(expression);
@@ -26,7 +28,8 @@ class _BaseAppState extends State<BaseApp> {
           ContextModel cm = ContextModel();
           result = '${exp.evaluate(EvaluationType.REAL, cm)}';
         } catch (e) {
-          result = "Error $e";
+          result = "Error";
+          debugPrint("Error $e");
         }
       } else {
         equation == '0' ? equation = text : equation = equation + text;
@@ -39,7 +42,7 @@ class _BaseAppState extends State<BaseApp> {
     var platformBrightness = MediaQuery.of(context).platformBrightness;
     Widget button(String text) {
       return Container(
-        margin: EdgeInsets.only(bottom: 20),
+        margin: EdgeInsets.all(MediaQuery.of(context).size.height * 0.012),
         height: MediaQuery.of(context).size.height * 0.09,
         child: FloatingActionButton(
           heroTag: null,
@@ -63,14 +66,14 @@ class _BaseAppState extends State<BaseApp> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
-              padding: EdgeInsets.only(top: 40),
+              padding: EdgeInsets.only(top: 20),
               child: Text(
                 equation,
                 style: primaryTextStyle.copyWith(fontSize: 48),
               ),
             ),
             SizedBox(
-              height: 88,
+              height: 8,
             ),
             Container(
               child: Text(
@@ -79,7 +82,7 @@ class _BaseAppState extends State<BaseApp> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(right: 12, left: 12, top: 20),
+              padding: EdgeInsets.only(right: 12, left: 12, top: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -103,17 +106,12 @@ class _BaseAppState extends State<BaseApp> {
                 ],
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Divider(
-                  color: primaryTextColor,
-                  thickness: 1,
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Divider(
+                color: primaryTextColor,
+                thickness: 1,
               ),
-            ),
-            SizedBox(
-              height: 12,
             ),
             Container(
               child: Row(
@@ -122,7 +120,7 @@ class _BaseAppState extends State<BaseApp> {
                   Container(
                     width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.only(
-                        left: 21, right: 11, top: 22, bottom: 43),
+                        left: 21, right: 11, bottom: 15, top: 12),
                     child: Table(
                       children: [
                         TableRow(
